@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 configure_logger(logger)
 
 dbname = get_database()
+dbname = dbname["Users"]
 
 class User():
     id = int
@@ -44,9 +45,11 @@ class User():
             ValueError: If a user with the username already exists.
         """
         salt, hashed_password = cls._generate_hashed_password(password)
+        name = dbname[username]
+        logger.info("Attempting to create user")
         try:
-            count = dbname["Users"].count_documents({})+1
-            name = dbname[username]
+            count = dbname.count_documents({})
+            count+=1
             name.insert_one({"Salt:":salt,"Hashed password:":hashed_password, "UserID:":count})
             logger.info("User successfully added to the database: %s", username)
         except:
@@ -55,6 +58,8 @@ class User():
                 name.delete_one(username)
                 logger.error("Duplicate username: %s", username)
                 raise ValueError(f"User with username '{username}' already exists")
+            else:
+                logger.error("Database error")
 
     @classmethod
     def check_password(cls, username: str, password: str) -> bool:

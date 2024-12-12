@@ -14,7 +14,8 @@ def get_database():
         logger.info("Connecting to database")
         CONNECTION_STRING = os.getenv("CONNECTION_STRINGDB")
         client = MongoClient(CONNECTION_STRING)
-        return client["Users"]
+        logger.info("Success")
+        return client["UserDatabase"]
     except:
         logger.error("DB connection failed")
 
