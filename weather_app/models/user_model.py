@@ -108,7 +108,6 @@ class User():
                 return ValueError(f"User {username} not found")
             else:
                 logger.info("Success in findng ID with username")
-                print(user["_id"])
                 return user["_id"]
         except:
             logger.error("Error during get_id_by_username function")

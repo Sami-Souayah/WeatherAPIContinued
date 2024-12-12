@@ -1,35 +1,29 @@
 import logging
 from typing import List, Any
 from dataclasses import asdict, dataclass
-from flask_sqlalchemy import SQLAlchemy
-from flask import Flask
+from db.db_connection import get_database
 
-from sqlalchemy.exc import IntegrityError
 from weather_app.utils.logger import configure_logger
-from weather_app.utils.weather_client import WeatherClient
+#from weather_app.utils.weather_client import WeatherClient
 
 
 logger = logging.getLogger(__name__)
 configure_logger(logger)
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///song_catalog.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+dbname = get_database()
+dbname = dbname["Favorite Locations"]
 
 
 @dataclass
-class FavoriteLocations(db.Model):
+class FavoriteLocations():
     """
     This class represents a user's favorite locations
     """
-    __tablename__ = 'favorite_locations'
 
-    id: int = db.Column(db.Integer, primary_key=True)
-    user_id: int = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    location_name: str = db.Column(db.String(100), nullable=False)
+    Locid: str
+    user_id: str
+    location_name: str
 
-    __table_args__ = (db.UniqueConstraint('user_id', 'location_name', name='user_location_uc'),)
     """
     A class to manage a list of favorite locations.
 
@@ -37,12 +31,6 @@ class FavoriteLocations(db.Model):
         id (int): The ID of the user associated with the favorite locations.
     """
 
-    def __post_init__(self):
-        """
-        Validates the logic of a new favorite location
-        """
-        if not self.location_name:
-            raise ValueError("Location name cannot be empty.")
 
     ##################################################
     # Locationa Management Functions
@@ -60,23 +48,22 @@ class FavoriteLocations(db.Model):
             ValueError: If the location is already a favorite.
         """
 
-        logger.info("Adding favorite location '%s' for user_id %d", location_name, user_id)
-        favorite = cls(user_id=user_id, location_name=location_name)
+        logger.info("Adding favorite location '%s' for user_id %s", location_name, str(user_id))
         try:
-            db.session.add(favorite)
-            db.session.commit()
-            logger.info("Successfully added favorite location '%s' for user_id %d", location_name, user_id)
-        except IntegrityError:
-            db.session.rollback()
-            logger.error("Location '%s' already exists for user_id %d", location_name, user_id)
-            raise ValueError(f"Location '{location_name}' is already a favorite.")
-        except Exception as e:
-            db.session.rollback()
-            logger.error("Error adding favorite location '%s': %s", location_name, str(e))
-            raise ValueError(f"Error adding favorite location: {str(e)}")
+           existing_user = dbname.find_one({"UserID": user_id})
+           if existing_user:
+               if location_name in FavoriteLocations.get_favorites(user_id):
+                    logger.warning("Location '%s' is already a favorite for user_id %s", location_name, str(user_id))
+                    return ValueError(f"Location '{location_name}' is already a favorite.")
+               dbname.update_one({"UserID":user_id}, {"$push":{"Location names":location_name}})
+           else:
+                dbname.insert_one({"UserID":user_id,"Location names":[location_name]})
+                logger.info("Added location to user's favorite locations")
+        except:
+            logger.error("Error adding location to user's favorite locations")
 
     @classmethod
-    def get_favorites(cls, user_id: int) -> List[dict[str, Any]]:
+    def get_favorites(cls, user_id: int):
         """
         Retrieves all favorite locations for a user.
 
@@ -86,15 +73,17 @@ class FavoriteLocations(db.Model):
         Returns:
             List[dict[str, Any]]: List of favorite locations as dictionaries.
         """
-        logger.info("Fetching favorite locations for user_id %d", user_id)
-        favorites = cls.query.filter_by(user_id=user_id).all()
-        if not favorites:
-            logger.info("No favorite locations found for user_id %d", user_id)
+        logger.info("Fetching favorite locations for user_id %s", user_id)
+        favorites = dbname.find_one({"UserID":user_id})
+        if not favorites["Location names"]:
+            logger.info("No favorite locations found for user_id %s", user_id)
             return []
-        return [{'id': fav.id, 'location_name': fav.location_name} for fav in favorites]
+        logger.info("Fetched favorite locations for user")
+        print(favorites["Location names"])
+        return favorites["Location names"]
     
     @classmethod
-    def delete_favorite(cls, user_id: int, location_name: str) -> None:
+    def delete_favorite(cls, user_id: int, location_name: str):
         """
         Deletes a favorite location for a user.
 
@@ -105,14 +94,16 @@ class FavoriteLocations(db.Model):
         Raises:
             ValueError: If the location is not found.
         """
-        logger.info("Deleting favorite location '%s' for user_id %d", location_name, user_id)
-        favorite = cls.query.filter_by(user_id=user_id, location_name=location_name).first()
-        if not favorite:
-            logger.error("Location '%s' not found for user_id %d", location_name, user_id)
-            raise ValueError(f"Location '{location_name}' not found.")
-        db.session.delete(favorite)
-        db.session.commit()
-        logger.info("Successfully deleted favorite location '%s' for user_id %d", location_name, user_id)
+        logger.info("Deleting favorite location '%s' for user_id %s", location_name, user_id)
+        favorites = dbname.find_one({"UserID":user_id})
+        if not favorites["Location names"]:
+            logger.info("No favorite locations found for user_id %s", user_id)
+            return []
+        try:
+            dbname.update_one({"UserID":user_id},{"$pull":{"Location names":location_name}})
+            logger.info("Location pulled from existing list")
+        except:
+            logger.error("Location not found on existing list or error with function")
 
     @classmethod
     def get_favorite_by_id(cls, favorite_id: int) -> dict[str, Any]:
