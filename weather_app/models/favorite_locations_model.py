@@ -168,9 +168,9 @@ class FavoriteLocations():
         Returns:
             List[dict[str, Any]]: List of favorite locations with weather data.
         """
-        favorites = cls.get_favorites(user_id)
-        for fav in favorites:
-            fav['weather'] = cls.get_weather_for_favorite(fav['location_name'])
+        favorites = dbname.find_one({"UserID":user_id})
+        for fav in favorites["Location names"]:
+            FavoriteLocations.get_weather_for_favorite(fav)
         return favorites
     
     @classmethod
@@ -188,7 +188,8 @@ class FavoriteLocations():
         """
           logger.info("Fetching weather for location '%s'", location_name)
           try:
-            weather_data = WeatherClient.get_hourly_forecast(location_name)
+            weathercl = WeatherClient()
+            weather_data = weathercl.get_hourly_forecast(location_name)
             logger.info("Weather data for '%s': %s", location_name, weather_data)
             return weather_data
           except Exception as e:
@@ -209,7 +210,8 @@ class FavoriteLocations():
         """
           logger.info("Fetching weather for location '%s'", location_name)
           try:
-            weather_data = WeatherClient.get_hourly_forecast(location_name)
+            weathercl = WeatherClient()
+            weather_data = weathercl.get_daily_forecast(location_name)
             logger.info("Weather data for '%s': %s", location_name, weather_data)
             return weather_data
           except Exception as e:
@@ -231,7 +233,8 @@ class FavoriteLocations():
         """
           logger.info("Fetching weather for location '%s'", location_name)
           try:
-            weather_data = WeatherClient.get_date_forecast(location_name, date_tm)
+            weathercl = WeatherClient()
+            weather_data = weathercl.get_date_forecast(location_name, date_tm)
             logger.info("Weather data for '%s': %s", location_name, weather_data)
             return weather_data
           except Exception as e:

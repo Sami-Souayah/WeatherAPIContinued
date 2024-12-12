@@ -55,5 +55,12 @@ def test_get_weather_for_favorite(locname):
     FavoriteLocations.add_favorite(userID, locname)
     FavoriteLocations.get_weather_for_favorite(locname)
 
+def test_get_weather_for_all_favorites():
+    User.create_user("Hello","poopoo")
+    userID = User.get_id_by_username("Hello")
+    FavoriteLocations.add_favorite(userID, "New York")
+    FavoriteLocations.add_favorite(userID, "Boston")
+    FavoriteLocations.add_favorite(userID, "Chicago")
+    FavoriteLocations.get_all_favorites_with_weather(userID)
 
-test_get_weather_for_favorite("New York")
+test_get_weather_for_all_favorites()
