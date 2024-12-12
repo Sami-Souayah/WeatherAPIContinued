@@ -1,8 +1,7 @@
 import hashlib
-from flask_sqlalchemy import SQLAlchemy
-from flask import Flask
 import logging
 import os
+from db.db_connection import get_database
 
 from sqlalchemy.exc import IntegrityError
 from weather_app.utils.logger import configure_logger
@@ -10,18 +9,15 @@ from weather_app.utils.logger import configure_logger
 logger = logging.getLogger(__name__)
 configure_logger(logger)
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///song_catalog.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+dbname = get_database()
 
-class User(db.Model):
+class User():
     __tablename__ = 'users'
 
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    salt = db.Column(db.String(32), nullable=False)  # 16-byte salt in hex
-    password = db.Column(db.String(64), nullable=False)  # SHA-256 hash in hex
+    id = int
+    username = str
+    salt = str  # 16-byte salt in hex
+    password = str # SHA-256 hash in hex
     
     @classmethod
     def _generate_hashed_password(cls, password: str) -> tuple[str, str]:
@@ -51,17 +47,18 @@ class User(db.Model):
             ValueError: If a user with the username already exists.
         """
         salt, hashed_password = cls._generate_hashed_password(password)
-        new_user = cls(username=username, salt=salt, password=hashed_password)
         try:
-            db.session.add(new_user)
-            db.session.commit()
+            count = dbname["Users"].count_documents({})+1
+            name = dbname[username]
+            name.insert_one({"Salt:":salt,"Hashed password:":hashed_password, "UserID:":count})
             logger.info("User successfully added to the database: %s", username)
         except IntegrityError:
-            db.session.rollback()
-            logger.error("Duplicate username: %s", username)
-            raise ValueError(f"User with username '{username}' already exists")
+            existing_user = name.find_one({"username": username})
+            if existing_user:
+                name.delete_one(username)
+                logger.error("Duplicate username: %s", username)
+                raise ValueError(f"User with username '{username}' already exists")
         except Exception as e:
-            db.session.rollback()
             logger.error("Database error: %s", str(e))
             raise
 
