@@ -20,6 +20,14 @@ def get_database():
 
 if __name__=="__main__":
     dbname = get_database()
+def get_client():
+    try:
+        logger.info("Connecting to database")
+        CONNECTION_STRING = os.getenv("CONNECTION_STRINGDB")
+        client = MongoClient(CONNECTION_STRING)
+        return client
+    except:
+        logger.error("DB connection failed")
 
 
 

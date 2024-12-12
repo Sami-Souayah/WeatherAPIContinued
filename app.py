@@ -1,12 +1,13 @@
 from dotenv import load_dotenv
 from flask import Flask, jsonify, make_response, Response, request
 from werkzeug.exceptions import BadRequest, Unauthorized
+from pymongo import MongoClient
 import logging
 from weather_app.models import favorite_locations_model
 from weather_app.utils.logger import configure_logger
 from weather_app.models.user_model import User
-from weather_app.utils.sql_utils import check_database_connection, check_table_exists
 from weather_app.utils.weather_client import WeatherClient
+from db.db_connection import get_client
 
 from config import ProductionConfig
 # Load environment variables from .env file
@@ -14,6 +15,8 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 configure_logger(logger)
+
+database = get_client()
 
     ####################################################
     #
@@ -29,34 +32,16 @@ def healthcheck() -> Response:
             JSON response indicating the health status of the service.
         """
         logger.info('Health check')
-        return make_response(jsonify({'status': 'healthy'}), 200)
-
-
-def db_check() -> Response:
-        """
-        Route to check if the database connection and songs table are functional.
-
-        Returns:
-            JSON response indicating the database health status.
-        Raises:
-            404 error if there is an issue with the database.
-        """
         try:
-            logger.info("Checking database connection...")
-            check_database_connection()
-            logger.info("Database connection is OK.")
-            logger.info("Checking if songs table exists...")
-            check_table_exists("favorite_locations")
-            logger.info("Favorite_locations table exists.")
-            logger.info("Checking if users table exists")
-            check_table_exists("users")
-            logger.info("Users table exists")
-            logger.info("Checking if favorite_locations table exists")
-            check_table_exists("favorite_locations")
-            logger.info("Favorite_locations table exists")
-            return make_response(jsonify({'database_status': 'healthy'}), 200)
+             db = database.admin
+             response = db.command("ping")
+             logger.info("Health check passed")
+             return make_response(jsonify({'status': 'healthy'}), 200)
         except Exception as e:
-            return make_response(jsonify({'error': str(e)}), 404)
+             logger.error("Health check failed")
+             return make_response(jsonify({"Health check failed:",str(e)}))
+
+
 
 
     ##########################################################
