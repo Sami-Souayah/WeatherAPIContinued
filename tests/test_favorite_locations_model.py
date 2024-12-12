@@ -49,5 +49,11 @@ def test_delete_favorite():
     FavoriteLocations.delete_favorite(userID, "Philly")
     FavoriteLocations.get_favorites(userID)
 
+def test_get_weather_for_favorite(locname):
+    User.create_user("Hello","poopoo")
+    userID = User.get_id_by_username("Hello")
+    FavoriteLocations.add_favorite(userID, locname)
+    FavoriteLocations.get_weather_for_favorite(locname)
 
-test_delete_favorite()
+
+test_get_weather_for_favorite("New York")

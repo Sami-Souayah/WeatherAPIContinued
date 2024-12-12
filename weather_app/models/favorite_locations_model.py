@@ -4,7 +4,7 @@ from dataclasses import asdict, dataclass
 from db.db_connection import get_database
 
 from weather_app.utils.logger import configure_logger
-#from weather_app.utils.weather_client import WeatherClient
+from weather_app.utils.weather_client import WeatherClient
 
 
 logger = logging.getLogger(__name__)
@@ -106,7 +106,7 @@ class FavoriteLocations():
             logger.error("Location not found on existing list or error with function")
 
     @classmethod
-    def get_favorite_by_id(cls, favorite_id: int) -> dict[str, Any]:
+    def get_favorite_by_id(cls, favorite_id: int):
         """
         Retrieves a favorite location by its ID.
 
@@ -119,11 +119,12 @@ class FavoriteLocations():
         Raises:
             ValueError: If the favorite location is not found.
         """
-        logger.info("Fetching favorite location by ID: %d", favorite_id)
-        favorite = cls.query.filter_by(id=favorite_id).first()
+        logger.info("Fetching favorite location by ID: %s", favorite_id)
+        favorite = dbname.find_one({"_id":favorite_id})
         if not favorite:
-            logger.error("Favorite location with ID %d not found", favorite_id)
-            raise ValueError(f"Favorite location with ID {favorite_id} not found.")
+            logger.error("Favorite location with ID %s not found", favorite_id)
+            return ValueError(f"Favorite location with ID {favorite_id} not found.")
+        logger.info("Fetched favorite location by ID")
         return asdict(favorite)
     
     ##################################################
@@ -131,7 +132,7 @@ class FavoriteLocations():
     ##################################################
 
     @classmethod
-    def get_weather_for_favorite(cls, location_name: str) -> dict[str, Any]:
+    def get_weather_for_favorite(cls, location_name) -> dict[str, Any]:
         """
         Retrieves the weather data for a favorite location.
 
@@ -146,8 +147,9 @@ class FavoriteLocations():
             ValueError: If fetching weather data fails.
         """
         logger.info("Fetching weather for location '%s'", location_name)
-        try:
-            weather_data = WeatherClient.get_weather(location_name)
+        try: 
+            weathercl = WeatherClient()
+            weather_data = weathercl.get_weather(location_name)
             logger.info("Weather data for '%s': %s", location_name, weather_data)
             return weather_data
         except Exception as e:
