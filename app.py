@@ -2,7 +2,6 @@ from dotenv import load_dotenv
 from flask import Flask, jsonify, make_response, Response, request
 from flask_cors import CORS
 from werkzeug.exceptions import BadRequest, Unauthorized
-from pymongo import MongoClient
 import logging
 from weather_app.models import favorite_locations_model
 from weather_app.utils.logger import configure_logger
