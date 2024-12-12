@@ -2,17 +2,16 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 import logging
 from weather_app.utils.logger import configure_logger
+import os
 
 logger = logging.getLogger(__name__)
 configure_logger(logger)
-
-import os
 
 load_dotenv()
 def get_database():
     try:
         logger.info("Connecting to database")
-        CONNECTION_STRING = os.getenv("CONNECTION_STRINGDB")
+        CONNECTION_STRING = os.getenv("CONNECTION_STRING")
         client = MongoClient(CONNECTION_STRING)
         logger.info("Success")
         return client["UserDatabase"]

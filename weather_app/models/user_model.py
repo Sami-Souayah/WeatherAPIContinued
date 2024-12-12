@@ -11,6 +11,7 @@ configure_logger(logger)
 dbname = get_database()
 dbname = dbname["Users"]
 
+
 class User():
     id = int
     username = str
@@ -45,20 +46,17 @@ class User():
             ValueError: If a user with the username already exists.
         """
         salt, hashed_password = cls._generate_hashed_password(password)
-        name = dbname[username]
         logger.info("Attempting to create user")
         try:
-            count = dbname.count_documents({})
-            count+=1
-            name.insert_one({"Salt:":salt,"Hashed password:":hashed_password, "UserID:":count})
+            existing_user = dbname.find_one({"Username:": username})
+            if existing_user:
+                dbname.delete_one({"Username:":username})
+                logger.error("Duplicate username: %s", username)
+                return ValueError(f"User with username '{username}' already exists")
+
+            dbname.insert_one({"Username:":username, "Salt:":salt,"Hashed password:":hashed_password})
             logger.info("User successfully added to the database: %s", username)
         except:
-            existing_user = name.find_one({"username": username})
-            if existing_user:
-                name.delete_one(username)
-                logger.error("Duplicate username: %s", username)
-                raise ValueError(f"User with username '{username}' already exists")
-            else:
                 logger.error("Database error")
 
     @classmethod

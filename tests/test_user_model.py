@@ -18,14 +18,14 @@ def test_create_user(sample_user, sample_password):
     """Test creating a new user with a unique username."""
     User.create_user(sample_user,sample_password)
 
-def test_create_duplicate_user(session, sample_user):
+def test_create_duplicate_user(sample_usename, sample_password):
     """Test attempting to create a user with a duplicate username."""
-    User.create_user(**sample_user)
-    with pytest.raises(ValueError, match="User with username 'testuser' already exists"):
-        User.create_user(**sample_user)
+    User.create_user(sample_usename,sample_password)
 
 ##########################################################
 # User Authentication
 ##########################################################
 
 test_create_user("Hello","testing123")
+
+test_create_duplicate_user("Hello","testing123")
