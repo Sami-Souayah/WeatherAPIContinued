@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 from flask import Flask, jsonify, make_response, Response, request
+from flask_cors import CORS
 from werkzeug.exceptions import BadRequest, Unauthorized
 from pymongo import MongoClient
 import logging
@@ -13,10 +14,15 @@ from config import ProductionConfig
 # Load environment variables from .env file
 load_dotenv()
 
+app=Flask(__name__)
+CORS(app)
+
 logger = logging.getLogger(__name__)
 configure_logger(logger)
 
 database = get_client()
+dbusers = database["Users"]
+dbfavorites = database["Favorite Locations"]
 
     ####################################################
     #
@@ -24,6 +30,7 @@ database = get_client()
     #
     ####################################################
 
+@app.route('/healthcheck', methods=['GET'])
 def healthcheck() -> Response:
         """
         Health check route to verify the service is running.
@@ -50,6 +57,7 @@ def healthcheck() -> Response:
     #
     ##########################################################
 
+@app.route('/favorites/add', methods=['POST'])
 def add_location() -> Response:
         """
         Route to add a new location to favorite locations.
@@ -85,6 +93,7 @@ def add_location() -> Response:
             return make_response(jsonify({'error': str(e)}), 500)
 
 
+@app.route('/favorites/delete/<int:user_id>/<string:location_name>', methods=['DELETE'])
 def delete_location(user_id: int, location_name: str) -> Response:
         """
         Route to delete a location by its name.
@@ -105,6 +114,7 @@ def delete_location(user_id: int, location_name: str) -> Response:
             return make_response(jsonify({'error': str(e)}), 500)
 
 
+@app.route('/favorites', methods=['GET'])
 def get_all_favorites() -> Response:
         """
         Route to retrieve all favorites for specific user,
@@ -126,7 +136,7 @@ def get_all_favorites() -> Response:
             logger.error(f"Error retrieving locations: {e}")
             return make_response(jsonify({'error': str(e)}), 500)
 
-
+@app.route('/favorites/<int:location_id>', methods=['GET'])
 def get_favorite_by_ID(location_id: int) -> Response:
         """
         Route to retrieve a location by its ID.
@@ -145,6 +155,7 @@ def get_favorite_by_ID(location_id: int) -> Response:
             logger.error(f"Error retrieving location by ID: {e}")
             return make_response(jsonify({'error': str(e)}), 500)
 
+@app.route('/weather/<string:location_name>', methods=['GET'])
 def get_weather_for_favorite(location_name) -> Response:
         """
         Route to retrieve the weather at a specific location by its name.
@@ -165,7 +176,7 @@ def get_weather_for_favorite(location_name) -> Response:
             return make_response(jsonify({'error': str(e)}), 500)
         
 
-
+@app.route('/weather/favorites', methods=['GET'])
 def get_weather_for_favorites() -> Response:
         """
         Route to retrieve weather information for all favorite locations of a user.
@@ -187,12 +198,14 @@ def get_weather_for_favorites() -> Response:
             from weather_app.utils.weather_client import WeatherClient  # Import your weather client utility
             weather_client = WeatherClient()
 
-            locations_with_weather = favorite_locations_model.FavoriteLocations.get_all_favorites_with_weather(user_id, weather_client)
+            locations_with_weather = favorite_locations_model.FavoriteLocations.get_all_favorites_with_weather(user_id)
             return make_response(jsonify({'status': 'success', 'locations': locations_with_weather}), 200)
 
         except Exception as e:
             logger.error(f"Error retrieving weather data for favorites: {e}")
             return make_response(jsonify({'error': str(e)}), 500)
+
+@app.route('/weather/hourly', method=['GET'])
         
 
     ############################################################
@@ -201,6 +214,7 @@ def get_weather_for_favorites() -> Response:
     #
     ############################################################
 
+@app.route('/user/create', methods=['POST'])
 def create_user() -> Response:
         """
         Route to create a new user.
@@ -233,6 +247,7 @@ def create_user() -> Response:
             logger.error(f"Error creating user: {e}")
             return make_response(jsonify({'error': str(e)}), 500)
 
+@app.route('/user/login', methods=['POST'])
 def login() -> Response:
         """
         Route to log in a user and load their combatants.
@@ -271,7 +286,7 @@ def login() -> Response:
 
 
 
-
+@app.route('/user/update_password', methods=['POST'])
 def update_password() -> Response:
         """
         Route to remove a location from the user's favorite locations.

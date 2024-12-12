@@ -169,9 +169,10 @@ class FavoriteLocations():
             List[dict[str, Any]]: List of favorite locations with weather data.
         """
         favorites = dbname.find_one({"UserID":user_id})
+        result = []
         for fav in favorites["Location names"]:
-            FavoriteLocations.get_weather_for_favorite(fav)
-        return favorites
+            result+=[FavoriteLocations.get_weather_for_favorite(fav)]
+        return result
     
     @classmethod
 
