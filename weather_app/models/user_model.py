@@ -48,13 +48,12 @@ class User():
         salt, hashed_password = cls._generate_hashed_password(password)
         logger.info("Attempting to create user")
         try:
-            existing_user = dbname.find_one({"Username:": username})
+            existing_user = dbname.find_one({"Username": username})
             if existing_user:
-                dbname.delete_one({"Username:":username})
                 logger.error("Duplicate username: %s", username)
                 return ValueError(f"User with username '{username}' already exists")
 
-            dbname.insert_one({"Username:":username, "Salt:":salt,"Hashed password:":hashed_password})
+            dbname.insert_one({"Username":username, "Salt":salt,"Hashed password":hashed_password})
             logger.info("User successfully added to the database: %s", username)
         except:
                 logger.error("Database error")
@@ -74,13 +73,19 @@ class User():
         Raises:
             ValueError: If the user does not exist.
         """
-        user = dbname["Users"].find_one(username)
+        user = dbname.find_one({"Username":username})
+        logger.info(f"Attempting to check password for {username}")
         if not user:
             logger.info("User %s not found", username)
-            raise ValueError(f"User {username} not found")
-        hashed_password = hashlib.sha256((password + user.salt).encode()).hexdigest()
-        return hashed_password == user.password
+            return ValueError(f"User {username} not found")
+        try:
+            hashed_password = user["Hashed password"]
+            userpass = hashlib.sha256((password + user["Salt"]).encode()).hexdigest()
+            return hashed_password == userpass
+        except:
+            logger.info("Error when conducting check_password")
 
+            
     @classmethod
     def get_id_by_username(cls, username: str) -> int:
         """
@@ -95,14 +100,22 @@ class User():
         Raises:
             ValueError: If the user does not exist.
         """
-        user = cls.query.filter_by(username=username).first()
-        if not user:
-            logger.info("User %s not found", username)
-            raise ValueError(f"User {username} not found")
-        return user.id
+        user = dbname.find_one({"Username":username})
+        logger.info("Attempting to find ID with username")
+        try:
+            if not user:
+                logger.info("User %s not found", username)
+                return ValueError(f"User {username} not found")
+            else:
+                logger.info("Success in findng ID with username")
+                print(user["_id"])
+                return user["_id"]
+        except:
+            logger.error("Error during get_id_by_username function")
+
 
     @classmethod
-    def update_password(cls, username: str, new_password: str) -> None:
+    def update_password(cls, username: str, password, new_password: str) -> None:
         """
         Update the password for a user.
 
@@ -113,13 +126,23 @@ class User():
         Raises:
             ValueError: If the user does not exist.
         """
-        user = cls.query.filter_by(username=username).first()
-        if not user:
-            logger.info("User %s not found", username)
-            raise ValueError(f"User {username} not found")
+        user = dbname.find_one({"Username":username})
+        try:
+            if not user:
+                logger.info("User %s not found", username)
+                return ValueError(f"User {username} not found")
+            if User.check_password(username,password)==False:
+                logger.error("Username and password do not match")
+                return ValueError(f"Wrong password enterred for {username}")
+            else:
+                salt,hashed_password = User._generate_hashed_password(new_password)
+                result = dbname.update_one(
+                {"Username": username}, 
+                {"$set": {"Salt": salt, "Hashed password": hashed_password}})
+                logger.info("Password updated")
+        except:
+            logger.error("Error replacing password")
 
-        salt, hashed_password = cls._generate_hashed_password(new_password)
-        user.salt = salt
-        user.password = hashed_password
+        
+
        
-        logger.info("Password updated successfully for user: %s", username)

@@ -26,6 +26,20 @@ def test_create_duplicate_user(sample_usename, sample_password):
 # User Authentication
 ##########################################################
 
-test_create_user("Hello","testing123")
+def test_check_password(sample_usename, sample_password):
+    """Test attempting to create a user with a duplicate username."""
+    return User.check_password(sample_usename,sample_password)
+def test_get_id_by_username(sample_usename):
+    return User.get_id_by_username(sample_usename)
+def test_update_password(sample_usename,sample_password,samplenew):
+    User.update_password(sample_usename,sample_password,samplenew)
 
-test_create_duplicate_user("Hello","testing123")
+#test_create_user("Hello","testing123")
+
+test_check_password("Hello","testing123")
+
+test_get_id_by_username("Hello")
+
+test_update_password("Hello","testing123","Poopatron")
+
+
