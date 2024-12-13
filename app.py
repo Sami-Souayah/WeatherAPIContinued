@@ -204,7 +204,7 @@ def get_weather_for_favorites() -> Response:
             logger.error(f"Error retrieving weather data for favorites: {e}")
             return make_response(jsonify({'error': str(e)}), 500)
 
-@app.route('/weather/hourly', method=['GET'])
+@app.route('/weather/hourly', methods=['GET'])
         
 
     ############################################################
@@ -214,7 +214,7 @@ def get_weather_for_favorites() -> Response:
     ############################################################
 
 @app.route('/user/create', methods=['POST'])
-def create_user() -> Response:
+def create_user():
         """
         Route to create a new user.
 
