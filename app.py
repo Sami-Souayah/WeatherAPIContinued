@@ -191,7 +191,7 @@ def get_weather_for_favorites() -> Response:
             if not user_id:
                 logger.error("Invalid input: 'user_id' is required.")
 
-            logger.info("Fetching weather data for all favorite locations for user_id %d", user_id)
+            logger.info("Fetching weather data for all favorite locations for user_id %s", user_id)
 
             # Assuming you have an initialized WeatherClient instance (e.g., weather_client)
             from weather_app.utils.weather_client import WeatherClient  # Import your weather client utility
@@ -275,7 +275,7 @@ def login() -> Response:
             if User.check_password(username, password):
                     user_id = User.get_id_by_username(username)
                     logger.info(f"User '{username}' logged in successfully")
-                    return make_response(jsonify({'status': 'success', 'message': 'Login successful', 'user_id': user_id}), 200)
+                    return make_response(jsonify({'status': 'success', 'message': 'Login successful', 'user_id': str(user_id)}), 200)
             else:
                 logger.warning(f"Invalid login attempt for username '{username}'")
                 return make_response(jsonify({'status': 'error', 'error': 'Invalid username or password'}), 401)
