@@ -7,7 +7,7 @@ from weather_app.models import favorite_locations_model
 from weather_app.utils.logger import configure_logger
 from weather_app.models.user_model import User
 from weather_app.utils.weather_client import WeatherClient
-from db.db_connection import get_client
+from db.db_connection import get_database
 
 from config import ProductionConfig
 # Load environment variables from .env file
@@ -19,7 +19,7 @@ CORS(app)
 logger = logging.getLogger(__name__)
 configure_logger(logger)
 
-database = get_client()
+database = get_database()
 dbusers = database["Users"]
 dbfavorites = database["Favorite Locations"]
 
