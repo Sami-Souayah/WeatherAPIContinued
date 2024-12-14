@@ -142,10 +142,9 @@ def get_weather_for_favorite() -> Response:
         user_id =  request.args.get("user_id")
         try:
             if location_name not in favorite_locations_model.FavoriteLocations.get_favorites(user_id):
-                 return make_response(jsonify({'status':'error','error':"Username and password are required"}))
-            weather_client = WeatherClient()
+                 return make_response(jsonify({'status':'error','error':"Location not one of your favorites"}))
             logger.info(f"Retrieving weather by location name: {location_name}")
-            weather = favorite_locations_model.FavoriteLocations.get_weather_for_favorite(location_name, weather_client)
+            weather = favorite_locations_model.FavoriteLocations.get_weather_for_favorite(location_name)
             return make_response(jsonify({'status': 'success', 'weather_loc': weather}), 200)
         except Exception as e:
             logger.error(f"Error retrieving weather at location by name: {e}")
@@ -281,16 +280,21 @@ def update_password() -> Response:
 
             if not username or not old_password or not new_password:
                 logger.error("Invalid input: 'username', 'old_password', and 'new_password' are required.")
-                return jsonify(({'error':'error','error':"Must have an input in all fields"}),400)
+                return make_response(jsonify({'status':'error','error':"Must have an input in all fields"}),400)
+
 
             # Verify current password
             if not User.check_password(username=username, password=old_password):
                 logger.warning(f"Password mismatch for user '{username}'.")
-                return jsonify(({'error':'error','error':"Username or password are incorrect"}),401)
+                return make_response(jsonify({'status':'error','error':"Username or password are incorrect"}),401)
 
             # Update password
-            User.update_password(username=username, new_password=new_password)
-            logger.info(f"Password updated successfully for user '{username}'.")
+            try:
+                User.update_password(username=username, new_password=new_password)
+            except ValueError as ve:
+                logger.warning(f"Failed to update password: {ve}")
+                return make_response(jsonify({'status': 'error', 'error': str(ve)}), 404) 
+                
             return make_response(jsonify({'status': 'success', 'message': 'Password updated successfully'}), 200)
         except Exception as e:
             logger.error(f"Error updating password: {e}")

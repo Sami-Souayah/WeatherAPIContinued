@@ -128,8 +128,8 @@ class User():
         user = dbname.find_one({"Username":username})
         try:
             if not user:
-                logger.info("User %s not found", username)
-                return ValueError(f"User {username} not found")
+                logger.error("User %s not found", username)
+                raise ValueError(f"User {username} not found")
             else:
                 salt,hashed_password = User._generate_hashed_password(new_password)
                 dbname.update_one(

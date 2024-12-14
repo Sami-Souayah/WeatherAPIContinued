@@ -69,9 +69,9 @@ function App() {
     }
   };
 
-  const fetOneFavWeather = async () => {
+  const fetchOneFavWeather = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/weather/get-weather-for-favo/`, {
+      const response = await axios.get(`${API_BASE_URL}/favorite/get-weather-for-favo/`, {
         params: { user_id: userId,location_name: locationName },
       });
       setForecastData(response.data.weather_loc);
@@ -198,6 +198,7 @@ function App() {
           <button onClick={deleteFavorite}>Delete from Favorites</button>
           <button onClick={() => {alert("Fetching weather for all favorites...");fetchFavoritesWeather();toggleFavorites()}}>Get Favorites Weather</button>
           <button onClick={() => {alert("Fetching all favorites...");fetchAllFavorites();toggleForecast()}}>Get All Favorites</button>
+          <button onClick={() => {alert("Fetching the weather for location...");fetchOneFavWeather();toggleForecast()}}>Weather At Favorite</button>
           <button onClick={logout}>Log out</button>
 
         </div>
