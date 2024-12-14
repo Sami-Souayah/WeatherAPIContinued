@@ -28,6 +28,8 @@ function App() {
     setForecastData(null);  
     setFavoriteData(null);   
     setError('');
+    setUsername('');
+    setPassword(''); 
     alert('Logged out successfully!');
   };
 
@@ -121,8 +123,12 @@ function App() {
       setIsLoggedIn(true);
       setError('');
       alert('Login successful!');
+      setUsername(''); // Clear username after login
+      setPassword(''); // Clear password after login
     } catch (err) {
-      setError(err.response ? err.response.data.error : 'An error occurred');
+      setError(err.response ? err.response.data.error : 'An error occurred')
+      setUsername(''); // Clear username after login
+      setPassword(''); // Clear password after login;
     }
   };
 

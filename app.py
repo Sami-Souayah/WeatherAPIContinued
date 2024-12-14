@@ -263,7 +263,7 @@ def login() -> Response:
 
             if not username or not password:
                     logger.error("Invalid login payload.")
-                    raise BadRequest("Both username and password are required.")
+                    return make_response((jsonify({'status': 'error', 'error': 'Username and password must be filled'}), 401))
             
             if User.check_password(username, password):
                     user_id = User.get_id_by_username(username)
