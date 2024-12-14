@@ -11,6 +11,18 @@ function App() {
   const [forecastData, setForecastData] = useState(null);
   const [error, setError] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [favoriteData,setFavoriteData] = useState(null);
+  const [showFavorites, setShowFavorites] = useState(true);
+  const [showForecast, setShowForecast] = useState(true);
+
+  const toggleFavorites = () => {
+    setShowFavorites(!showFavorites);
+  };
+
+  const toggleForecast = () => {
+    setShowForecast(!showForecast);
+  };
+
 
   // User login
   const login = async () => {
@@ -72,6 +84,7 @@ function App() {
       });
       setForecastData(response.data.locations);
       setError('');
+      alert("Fetched weather for all favorite locations!")
     } catch (err) {
       setError(err.response ? err.response.data.error : 'An error occurred');
     }
@@ -114,7 +127,7 @@ function App() {
           user_id: userId
         }
       });
-      setForecastData(response.data.favorite_locations);
+      setFavoriteData(response.data.favorite_locations);
       setError('');
       alert('All favorites fetched!');
     }  catch (err) {
@@ -150,7 +163,7 @@ function App() {
         <div>
           <h2>User Actions</h2>
           <label>User ID: </label>
-          <input type="text" value={userId} readOnly />
+          <label> {userId} </label>
           <br />
           <label>Location Name: </label>
           <input
@@ -163,11 +176,16 @@ function App() {
           <button onClick={fetchDailyForecast}>Get Daily Forecast</button>
           <button onClick={addFavorite}>Add to Favorites</button>
           <button onClick={deleteFavorite}>Delete from Favorites</button>
-          <button onClick={fetchFavoritesWeather}>Get Favorites Weather</button>
-          <button onClick={fetchAllFavorites}>Get All Favorites</button>
+          <button onClick={() => {fetchFavoritesWeather();toggleFavorites()}}>Get Favorites Weather</button>
+          <button onClick={() => {fetchAllFavorites();toggleForecast()}}>Get All Favorites</button>
         </div>
       )}
-
+      {favoriteData && 
+        <div>
+          <h2> Favorites: </h2>
+          <pre>{JSON.stringify(favoriteData, null,2)}</pre>
+        </div>
+      }
       {forecastData && (
         <div>
           <h2>Forecast Data</h2>
