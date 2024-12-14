@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
+import Register from './Register'; // Import your Register component
 import axios from 'axios';
 
 const API_BASE_URL = 'http://127.0.0.1:5000';
@@ -11,50 +13,24 @@ function App() {
   const [forecastData, setForecastData] = useState(null);
   const [error, setError] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [favoriteData,setFavoriteData] = useState(null);
+  const [favoriteData, setFavoriteData] = useState(null);
   const [showFavorites, setShowFavorites] = useState(true);
   const [showForecast, setShowForecast] = useState(true);
 
-  const toggleFavorites = () => {
-    setShowFavorites(!showFavorites);
+  const navigate = useNavigate();  // Use useNavigate
+
+  const toggleFavorites = () => setShowFavorites(!showFavorites);
+  const toggleForecast = () => setShowForecast(!showForecast);
+  const logout = () => {
+    setUserId('');
+    setIsLoggedIn(false);
+    setLocationName('');
+    setForecastData(null);  
+    setFavoriteData(null);   
+    setError('');
+    alert('Logged out successfully!');
   };
 
-  const toggleForecast = () => {
-    setShowForecast(!showForecast);
-  };
-
-
-  // User login
-  const login = async () => {
-    try {
-      const response = await axios.post(`${API_BASE_URL}/user/login`, {
-        username,
-        password,
-      });
-      setUserId(response.data.user_id);
-      setIsLoggedIn(true);
-      setError('');
-      alert('Login successful!');
-    } catch (err) {
-      setError(err.response ? err.response.data.error : 'An error occurred');
-    }
-  };
-
-  // User registration
-  const register = async () => {
-    try {
-      await axios.post(`${API_BASE_URL}/user/create`, {
-        username,
-        password,
-      });
-      setError('');
-      alert('Registration successful! You can now log in.');
-    } catch (err) {
-      setError(err.response ? err.response.data.error : 'An error occurred');
-    }
-  };
-
-  // Fetch hourly forecast
   const fetchHourlyForecast = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/forecast/hourly/${locationName}`);
@@ -129,11 +105,31 @@ function App() {
       });
       setFavoriteData(response.data.favorite_locations);
       setError('');
-      alert('All favorites fetched!');
     }  catch (err) {
       setError(err.response ? err.response.data.error : 'An error occurred');
     }
   }
+
+  // User login
+  const login = async () => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/user/login`, {
+        username,
+        password,
+      });
+      setUserId(response.data.user_id);
+      setIsLoggedIn(true);
+      setError('');
+      alert('Login successful!');
+    } catch (err) {
+      setError(err.response ? err.response.data.error : 'An error occurred');
+    }
+  };
+
+  // Navigate to registration page
+  const goToRegister = () => {
+    navigate('/register');  // Using navigate to switch to the register page
+  };
 
   return (
     <div style={{ padding: '20px' }}>
@@ -157,13 +153,13 @@ function App() {
           />
           <br />
           <button onClick={login}>Login</button>
-          <button onClick={register}>Register</button>
+          <button onClick={goToRegister}>Go to Register</button> {/* Button to navigate to registration */}
         </div>
       ) : (
         <div>
           <h2>User Actions</h2>
           <label>User ID: </label>
-          <label> {userId} </label>
+          <label>{userId}</label>
           <br />
           <label>Location Name: </label>
           <input
@@ -172,12 +168,14 @@ function App() {
             onChange={(e) => setLocationName(e.target.value)}
           />
           <br />
-          <button onClick={fetchHourlyForecast}>Get Hourly Forecast</button>
-          <button onClick={fetchDailyForecast}>Get Daily Forecast</button>
+          <button onClick={() => alert('Fetching hourly forecast...')}>Get Hourly Forecast</button>
+          <button onClick={() => alert('Fetching daily forecast...')}>Get Daily Forecast</button>
           <button onClick={addFavorite}>Add to Favorites</button>
           <button onClick={deleteFavorite}>Delete from Favorites</button>
-          <button onClick={() => {fetchFavoritesWeather();toggleFavorites()}}>Get Favorites Weather</button>
-          <button onClick={() => {fetchAllFavorites();toggleForecast()}}>Get All Favorites</button>
+          <button onClick={() => {alert("Fetching weather for all favorites...");fetchFavoritesWeather();toggleFavorites()}}>Get Favorites Weather</button>
+          <button onClick={() => {alert("Fetching all favorites...");fetchAllFavorites();toggleForecast()}}>Get All Favorites</button>
+          <button onClick={logout}>Log out</button>
+
         </div>
       )}
       {favoriteData && 
@@ -192,7 +190,6 @@ function App() {
           <pre>{JSON.stringify(forecastData, null, 2)}</pre>
         </div>
       )}
-
       {error && (
         <div style={{ color: 'red' }}>
           <h2>Error</h2>
@@ -203,4 +200,14 @@ function App() {
   );
 }
 
-export default App;
+// Wrap App with Router and Routes
+const AppWrapper = () => (
+  <Router>
+    <Routes>
+      <Route path="/" element={<App />} />
+      <Route path="/register" element={<Register />} />
+    </Routes>
+  </Router>
+);
+
+export default AppWrapper;
