@@ -116,8 +116,7 @@ def delete_location() -> Response:
             return make_response(jsonify({'error': str(e)}), 500)
 @app.route('/favorites/get-all-favs/', methods =['GET'] )
 def get_all_favs():
-     data=request.get_json()
-     user_id=data.get("user_id")
+     user_id = request.args.get("user_id")
      try:
           logger.info(f"Fetching all favorites for user_id: {str(user_id)}")
           favorite_locations_model.FavoriteLocations.get_favorites(user_id)

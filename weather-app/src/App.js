@@ -110,7 +110,7 @@ function App() {
   const fetchAllFavorites = async() => {
     try{
       await axios.get(`${API_BASE_URL}/favorites/get-all-favs/`, {
-        data: {
+        params: {
           user_id: userId
         }
       });
