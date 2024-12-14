@@ -114,8 +114,18 @@ def delete_location() -> Response:
         except Exception as e:
             logger.error(f"Errorw deleting location: {e}")
             return make_response(jsonify({'error': str(e)}), 500)
-
-
+@app.route('favorites/get-all-favs/', methods =['GET'] )
+def get_all_favs():
+     data=request.get_json()
+     user_id=data.get("user_id")
+     try:
+          logger.info(f"Fetching all favorites for user_id: {str(user_id)}")
+          favorite_locations_model.FavoriteLocations.get_favorites(user_id)
+          return make_response(jsonify({"status":"success"}),200)
+     except Exception as e:
+          logger.error(f"Error fetching all favorites: {e}")
+          return make_response(jsonify({'error': str(e)}), 500)
+     
 @app.route('/favorites', methods=['GET'])
 def get_all_favorites() -> Response:
         """

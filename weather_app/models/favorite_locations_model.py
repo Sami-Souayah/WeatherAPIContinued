@@ -170,6 +170,9 @@ class FavoriteLocations():
         """
         favorites = dbname.find_one({"UserID":user_id})
         result = []
+        if FavoriteLocations.get_favorites(user_id)==[]:
+            logger.error(f"No favorite locations found for user")
+            return ValueError(f"No favorite locations for userID {str(user_id)}")
         for fav in favorites["Location names"]:
             result+=[FavoriteLocations.get_weather_for_favorite(fav)]
         return result

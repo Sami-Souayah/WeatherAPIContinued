@@ -107,6 +107,20 @@ function App() {
     }
   };
 
+  const fetchAllFavorites = async() => {
+    try{
+      await axios.delete(`${API_BASE_URL}/favorites/get-all-favs/`, {
+        data: {
+          user_id: userId
+        }
+      });
+      setError('');
+      alert('Location removed from favorites!');
+    }  catch (err) {
+      setError(err.response ? err.response.data.error : 'An error occurred');
+    }
+  }
+
   return (
     <div style={{ padding: '20px' }}>
       <h1>Weather App</h1>
@@ -149,6 +163,7 @@ function App() {
           <button onClick={addFavorite}>Add to Favorites</button>
           <button onClick={deleteFavorite}>Delete from Favorites</button>
           <button onClick={fetchFavoritesWeather}>Get Favorites Weather</button>
+          <button onClick={fetchAllFavorites}>Get All Favorites</button>
         </div>
       )}
 
