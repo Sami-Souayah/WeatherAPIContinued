@@ -109,11 +109,12 @@ function App() {
 
   const fetchAllFavorites = async() => {
     try{
-      await axios.get(`${API_BASE_URL}/favorites/get-all-favs/`, {
+      const response = await axios.get(`${API_BASE_URL}/favorites/get-all-favs/`, {
         params: {
           user_id: userId
         }
       });
+      setForecastData(response.data.favorite_locations);
       setError('');
       alert('All favorites fetched!');
     }  catch (err) {

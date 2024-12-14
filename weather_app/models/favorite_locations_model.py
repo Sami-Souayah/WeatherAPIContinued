@@ -79,7 +79,6 @@ class FavoriteLocations():
             logger.info("No favorite locations found for user_id %s", user_id)
             return []
         logger.info("Fetched favorite locations for user")
-        print(favorites["Location names"])
         return favorites["Location names"]
     
     @classmethod

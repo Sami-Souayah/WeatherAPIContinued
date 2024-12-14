@@ -119,33 +119,12 @@ def get_all_favs():
      user_id = request.args.get("user_id")
      try:
           logger.info(f"Fetching all favorites for user_id: {str(user_id)}")
-          favorite_locations_model.FavoriteLocations.get_favorites(user_id)
-          return make_response(jsonify({"status":"success"}),200)
+          favlocs = favorite_locations_model.FavoriteLocations.get_favorites(user_id)
+          return make_response(jsonify({"status":"success", "favorite_locations":favlocs}),200)
      except Exception as e:
           logger.error(f"Error fetching all favorites: {e}")
           return make_response(jsonify({'error': str(e)}), 500)
      
-@app.route('/favorites', methods=['GET'])
-def get_all_favorites() -> Response:
-        """
-        Route to retrieve all favorites for specific user,
-
-        Query Parameter:
-
-        Returns:
-            JSON response with the list of songs or error message.
-        """
-        try:
-            user_id = request.args.get("user_id")
-            if not user_id:
-                logger.error("Invalid input: 'user_id' is required.")
-                
-            logger.info("Retrieving all favorites from the user's favorites")
-            locations = favorite_locations_model.FavoriteLocations.get_favorites(user_id=user_id)
-            return make_response(jsonify({'status': 'success', 'locations': locations}), 200)
-        except Exception as e:
-            logger.error(f"Error retrieving locations: {e}")
-            return make_response(jsonify({'error': str(e)}), 500)
 
 @app.route('/favorites/<int:location_id>', methods=['GET'])
 def get_favorite_by_ID(location_id: int) -> Response:
@@ -161,7 +140,7 @@ def get_favorite_by_ID(location_id: int) -> Response:
         try:
             logger.info(f"Retrieving weather at location: {location_id}")
             weather = favorite_locations_model.FavoriteLocations.get_favorite_by_id(location_id, WeatherClient())
-            return make_response(jsonify({'status': 'success', 'song': weather}), 200)
+            return make_response(jsonify({'status': 'success', 'weather:': weather}), 200)
         except Exception as e:
             logger.error(f"Error retrieving location by ID: {e}")
             return make_response(jsonify({'error': str(e)}), 500)
