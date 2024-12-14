@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import Register from './Register'; // Import your Register component
 import axios from 'axios';
+import UpdatePass from './UpdatePass'
 
 const API_BASE_URL = 'http://127.0.0.1:5000';
 
@@ -68,6 +69,19 @@ function App() {
     }
   };
 
+  const fetOneFavWeather = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/weather/get-weather-for-favo/`, {
+        params: { user_id: userId,location_name: locationName },
+      });
+      setForecastData(response.data.weather_loc);
+      setError('');
+      alert("Fetched weather for location!")
+    } catch (err) {
+      setError(err.response ? err.response.data.error : 'An error occurred');
+    }
+  };
+
   // Add a favorite location
   const addFavorite = async () => {
     try {
@@ -123,18 +137,21 @@ function App() {
       setIsLoggedIn(true);
       setError('');
       alert('Login successful!');
-      setUsername(''); // Clear username after login
-      setPassword(''); // Clear password after login
+      setUsername(''); 
+      setPassword(''); 
     } catch (err) {
       setError(err.response ? err.response.data.error : 'An error occurred')
-      setUsername(''); // Clear username after login
-      setPassword(''); // Clear password after login;
+      setUsername(''); 
+      setPassword(''); 
     }
   };
 
-  // Navigate to registration page
   const goToRegister = () => {
-    navigate('/register');  // Using navigate to switch to the register page
+    navigate('/register');  
+  };
+
+  const goToUpdatePass = () => {
+    navigate('/update-pass')
   };
 
   return (
@@ -160,6 +177,7 @@ function App() {
           <br />
           <button onClick={login}>Login</button>
           <button onClick={goToRegister}>Go to Register</button> {/* Button to navigate to registration */}
+          <button onClick={goToUpdatePass}>Update Password</button>
         </div>
       ) : (
         <div>
@@ -206,12 +224,12 @@ function App() {
   );
 }
 
-// Wrap App with Router and Routes
 const AppWrapper = () => (
   <Router>
     <Routes>
       <Route path="/" element={<App />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/update-pass" element={<UpdatePass />} />
     </Routes>
   </Router>
 );

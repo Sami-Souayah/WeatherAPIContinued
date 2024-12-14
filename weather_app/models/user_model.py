@@ -114,7 +114,7 @@ class User():
 
 
     @classmethod
-    def update_password(cls, username: str, password, new_password: str) -> None:
+    def update_password(cls, username: str, new_password: str) -> None:
         """
         Update the password for a user.
 
@@ -130,12 +130,9 @@ class User():
             if not user:
                 logger.info("User %s not found", username)
                 return ValueError(f"User {username} not found")
-            if User.check_password(username,password)==False:
-                logger.error("Username and password do not match")
-                return ValueError(f"Wrong password enterred for {username}")
             else:
                 salt,hashed_password = User._generate_hashed_password(new_password)
-                result = dbname.update_one(
+                dbname.update_one(
                 {"Username": username}, 
                 {"$set": {"Salt": salt, "Hashed password": hashed_password}})
                 logger.info("Password updated")

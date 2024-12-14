@@ -126,26 +126,8 @@ def get_all_favs():
           return make_response(jsonify({'error': str(e)}), 500)
      
 
-@app.route('/favorites/<int:location_id>', methods=['GET'])
-def get_favorite_by_ID(location_id: int) -> Response:
-        """
-        Route to retrieve a location by its ID.
 
-        Path Parameter:
-            - location_id (int): The ID of the location.
-
-        Returns:
-            JSON response with the location weather or error message.
-        """
-        try:
-            logger.info(f"Retrieving weather at location: {location_id}")
-            weather = favorite_locations_model.FavoriteLocations.get_favorite_by_id(location_id, WeatherClient())
-            return make_response(jsonify({'status': 'success', 'weather:': weather}), 200)
-        except Exception as e:
-            logger.error(f"Error retrieving location by ID: {e}")
-            return make_response(jsonify({'error': str(e)}), 500)
-
-@app.route('/weather/<string:location_name>', methods=['GET'])
+@app.route('/favorite/get-weather-for-favo/', methods=['GET'])
 def get_weather_for_favorite() -> Response:
         """
         Route to retrieve the weather at a specific location by its name.
@@ -156,13 +138,15 @@ def get_weather_for_favorite() -> Response:
         Returns:
             JSON response with the song details or error message.
         """
-        data = request.get_json()
-        location_name = data.get("location_name")
+        location_name = request.args.get("location_name")
+        user_id =  request.args.get("user_id")
         try:
+            if location_name not in favorite_locations_model.FavoriteLocations.get_favorites(user_id):
+                 return make_response(jsonify({'status':'error','error':"Username and password are required"}))
             weather_client = WeatherClient()
             logger.info(f"Retrieving weather by location name: {location_name}")
             weather = favorite_locations_model.FavoriteLocations.get_weather_for_favorite(location_name, weather_client)
-            return make_response(jsonify({'status': 'success', 'Weather at desired location': weather}), 200)
+            return make_response(jsonify({'status': 'success', 'weather_loc': weather}), 200)
         except Exception as e:
             logger.error(f"Error retrieving weather at location by name: {e}")
             return make_response(jsonify({'error': str(e)}), 500)
@@ -263,7 +247,7 @@ def login() -> Response:
 
             if not username or not password:
                     logger.error("Invalid login payload.")
-                    return make_response((jsonify({'status': 'error', 'error': 'Username and password must be filled'}), 401))
+                    return make_response((jsonify({'status': 'error', 'error': 'Username and password must be filled'}), 400))
             
             if User.check_password(username, password):
                     user_id = User.get_id_by_username(username)
@@ -278,7 +262,7 @@ def login() -> Response:
 
 
 
-@app.route('/user/update_password', methods=['POST'])
+@app.route('/user/update_password/', methods=['POST'])
 def update_password() -> Response:
         """
         Route to remove a location from the user's favorite locations.
@@ -292,22 +276,21 @@ def update_password() -> Response:
         try:
             data = request.get_json()
             username = data.get('username')
-            old_password = data.get('old_password')
-            new_password = data.get('new_password')
+            old_password = data.get('password')
+            new_password = data.get('newPassword')
 
             if not username or not old_password or not new_password:
                 logger.error("Invalid input: 'username', 'old_password', and 'new_password' are required.")
-                raise BadRequest("All fields ('username', 'old_password', 'new_password') are required.")
+                return jsonify(({'error':'error','error':"Must have an input in all fields"}),400)
 
             # Verify current password
             if not User.check_password(username=username, password=old_password):
                 logger.warning(f"Password mismatch for user '{username}'.")
-                raise Unauthorized("Current password is incorrect.")
+                return jsonify(({'error':'error','error':"Username or password are incorrect"}),401)
 
             # Update password
             User.update_password(username=username, new_password=new_password)
             logger.info(f"Password updated successfully for user '{username}'.")
-
             return make_response(jsonify({'status': 'success', 'message': 'Password updated successfully'}), 200)
         except Exception as e:
             logger.error(f"Error updating password: {e}")
