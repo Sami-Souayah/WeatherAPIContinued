@@ -17,6 +17,7 @@ function App() {
   const [favoriteData, setFavoriteData] = useState(null);
   const [showFavorites, setShowFavorites] = useState(true);
   const [showForecast, setShowForecast] = useState(true);
+  const [showPassword, setShowPassword] = useState(false)
 
   const navigate = useNavigate();  // Use useNavigate
 
@@ -172,10 +173,15 @@ function App() {
           <br />
           <label>Password: </label>
           <input
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            style = {{marginRight : '10px', marginBottom : '10px'}}
           />
+          <button type="button"
+            onMouseDown={() => setShowPassword(true)} // Show password when button is held
+            onMouseUp={() => setShowPassword(false)} // Hide password when button is released
+          onMouseLeave={() => setShowPassword(false)}> Show Password </button>
           <br />
           <button onClick={login}>Login</button>
           <button onClick={goToRegister}>Go to Register</button> {/* Button to navigate to registration */}

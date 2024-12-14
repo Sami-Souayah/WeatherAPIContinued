@@ -8,6 +8,7 @@ from weather_app.utils.logger import configure_logger
 from weather_app.models.user_model import User
 from weather_app.utils.weather_client import WeatherClient
 from db.db_connection import get_database
+import re
 
 from config import ProductionConfig
 # Load environment variables from .env file
@@ -207,16 +208,35 @@ def create_user():
             data = request.get_json()
             username = data.get('username')
             password = data.get('password')
-
+            confirmpas = data.get("confirmPass")
+            
+        
             if not username or not password:
                 logger.error("Invalid input: 'username' and 'password' are required.")
                 return make_response(jsonify({'error': 'Invalid input, both username and password are required'}), 400)
+            
+            if len(password)<8:
+                 logger.error("Invalid input: Password must be greater than 8 characters long")
+                 return make_response(jsonify({'error': 'Invalid input, password must be greater than 8 characters'}), 400)
+            
+
+            if not re.search(r'[A-Z]', password):
+                 logger.error("Password must contain at least one uppercase letter.")
+                 return make_response(jsonify({'error': 'Password must contain at least one uppercase letter'}), 400)
+        
+            if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):  # checks for special characters
+                logger.error("Password must contain a special character.")
+                return make_response(jsonify({'error': 'Password must contain a special character'}), 400)
+
+            if confirmpas!=password:
+                 logger.error("Passwords do not match")
+                 return make_response(jsonify({'error': 'Invalid input, passwords do not match'}), 400)
+
 
             logger.info(f"Creating user: {username}")
             try:
-                 
                 User.create_user(username, password)
-            except Exception as ve:
+            except ValueError as ve:
                  return make_response(jsonify({'status': 'error','error': str(ve)}), 404)
 
             logger.info(f"User created successfully: {username}")
