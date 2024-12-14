@@ -51,7 +51,7 @@ class User():
             existing_user = dbname.find_one({"Username": username})
             if existing_user:
                 logger.error("Duplicate username: %s", username)
-                return ValueError(f"User with username '{username}' already exists")
+                raise ValueError(f"User with username '{username}' already exists")
 
             dbname.insert_one({"Username":username, "Salt":salt,"Hashed password":hashed_password})
             logger.info("User successfully added to the database: %s", username)

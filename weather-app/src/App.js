@@ -34,6 +34,8 @@ function App() {
     alert('Logged out successfully!');
   };
 
+  const clearall = () => {setLocationName('');setFavoriteData(null);setForecastData(null)}
+
   const fetchHourlyForecast = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/forecast/hourly/${locationName}`);
@@ -199,6 +201,7 @@ function App() {
           <button onClick={() => {alert("Fetching weather for all favorites...");fetchFavoritesWeather();toggleFavorites()}}>Get Favorites Weather</button>
           <button onClick={() => {alert("Fetching all favorites...");fetchAllFavorites();toggleForecast()}}>Get All Favorites</button>
           <button onClick={() => {alert("Fetching the weather for location...");fetchOneFavWeather();toggleForecast()}}>Weather At Favorite</button>
+          <button onClick={clearall}>Clear All</button>
           <button onClick={logout}>Log out</button>
 
         </div>

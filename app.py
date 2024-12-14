@@ -180,7 +180,6 @@ def get_weather_for_favorites() -> Response:
             logger.error(f"Error retrieving weather data for favorites: {e}")
             return make_response(jsonify({'error': str(e)}), 500)
 
-@app.route('/weather/hourly', methods=['GET'])
         
 
     ############################################################
@@ -214,7 +213,12 @@ def create_user():
                 return make_response(jsonify({'error': 'Invalid input, both username and password are required'}), 400)
 
             logger.info(f"Creating user: {username}")
-            User.create_user(username, password)
+            try:
+                 
+                User.create_user(username, password)
+            except Exception as ve:
+                 return make_response(jsonify({'status': 'error','error': str(ve)}), 404)
+
             logger.info(f"User created successfully: {username}")
             return make_response(jsonify({'status': 'user added', 'username': username}), 201)
         
