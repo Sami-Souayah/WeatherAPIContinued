@@ -109,13 +109,13 @@ function App() {
 
   const fetchAllFavorites = async() => {
     try{
-      await axios.delete(`${API_BASE_URL}/favorites/get-all-favs/`, {
+      await axios.get(`${API_BASE_URL}/favorites/get-all-favs/`, {
         data: {
           user_id: userId
         }
       });
       setError('');
-      alert('Location removed from favorites!');
+      alert('All favorites fetched!');
     }  catch (err) {
       setError(err.response ? err.response.data.error : 'An error occurred');
     }
