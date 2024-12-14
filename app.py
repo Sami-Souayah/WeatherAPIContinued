@@ -114,7 +114,7 @@ def delete_location() -> Response:
         except Exception as e:
             logger.error(f"Errorw deleting location: {e}")
             return make_response(jsonify({'error': str(e)}), 500)
-@app.route('favorites/get-all-favs/', methods =['GET'] )
+@app.route('/favorites/get-all-favs/', methods =['GET'] )
 def get_all_favs():
      data=request.get_json()
      user_id=data.get("user_id")
