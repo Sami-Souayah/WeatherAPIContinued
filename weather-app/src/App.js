@@ -94,7 +94,12 @@ function App() {
   // Delete a favorite location
   const deleteFavorite = async () => {
     try {
-      await axios.delete(`${API_BASE_URL}/favorites/delete/${userId}/${locationName}`);
+      await axios.delete(`${API_BASE_URL}/favorites/delete/`, {
+        data: {
+          user_id: userId,
+          location_name: locationName,
+        },
+      });
       setError('');
       alert('Location removed from favorites!');
     } catch (err) {

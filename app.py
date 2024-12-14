@@ -92,8 +92,8 @@ def add_location() -> Response:
             return make_response(jsonify({'error': str(e)}), 500)
 
 
-@app.route('/favorites/delete/<int:user_id>/<string:location_name>', methods=['DELETE'])
-def delete_location(user_id: int, location_name: str) -> Response:
+@app.route('/favorites/delete/', methods=['DELETE'])
+def delete_location() -> Response:
         """
         Route to delete a location by its name.
 
@@ -104,6 +104,9 @@ def delete_location(user_id: int, location_name: str) -> Response:
         Returns:
             JSON response indicating success of the operation or error message.
         """
+        data = request.get_json()
+        location_name = data.get("location_name")
+        user_id = data.get("user_id")
         try:
             logger.info(f"Deleting location by name: {location_name}")
             favorite_locations_model.FavoriteLocations.delete_favorite(user_id=user_id,location_name=location_name)
@@ -155,7 +158,7 @@ def get_favorite_by_ID(location_id: int) -> Response:
             return make_response(jsonify({'error': str(e)}), 500)
 
 @app.route('/weather/<string:location_name>', methods=['GET'])
-def get_weather_for_favorite(location_name) -> Response:
+def get_weather_for_favorite() -> Response:
         """
         Route to retrieve the weather at a specific location by its name.
 
@@ -165,6 +168,8 @@ def get_weather_for_favorite(location_name) -> Response:
         Returns:
             JSON response with the song details or error message.
         """
+        data = request.get_json()
+        location_name = data.get("location_name")
         try:
             weather_client = WeatherClient()
             logger.info(f"Retrieving weather by location name: {location_name}")
