@@ -63,4 +63,12 @@ def test_get_weather_for_all_favorites():
     FavoriteLocations.add_favorite(userID, "Chicago")
     FavoriteLocations.get_all_favorites_with_weather(userID)
 
-test_get_weather_for_all_favorites()
+def test_get_daily_forecast():
+    User.create_user("Hello","poopoo")
+    userID = User.get_id_by_username("Hello")
+    FavoriteLocations.add_favorite(userID, "New York")
+    FavoriteLocations.add_favorite(userID, "Boston")
+    FavoriteLocations.add_favorite(userID, "Chicago")
+    FavoriteLocations.get_daily_forecast("Chicago")
+
+print(test_get_daily_forecast())
