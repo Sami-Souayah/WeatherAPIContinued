@@ -180,6 +180,52 @@ def get_weather_for_favorites() -> Response:
         except Exception as e:
             logger.error(f"Error retrieving weather data for favorites: {e}")
             return make_response(jsonify({'error': str(e)}), 500)
+        
+@app.route('/favorite/daily/', methods=['GET'])
+def get_daily_forecast() -> Response:
+        """
+        Route to retrieve the weather at a specific location by its name.
+
+        Path Parameter:
+            - location_name (str): The name of the desired location
+
+        Returns:
+            JSON response with the song details or error message.
+        """
+        location_name = request.args.get("location_name")
+        user_id =  request.args.get("user_id")
+        try:
+            if location_name not in favorite_locations_model.FavoriteLocations.get_favorites(user_id):
+                 return make_response(jsonify({'status':'error','error':"Location not one of your favorites"}))
+            logger.info(f"Retrieving daily forecast by location name: {location_name}")
+            weather = favorite_locations_model.FavoriteLocations.get_daily_forecast(location_name)
+            return make_response(jsonify({'status': 'success', 'daily_forecast': weather}), 200)
+        except Exception as e:
+            logger.error(f"Error retrieving weather at location by name: {e}")
+            return make_response(jsonify({'error': str(e)}), 500)
+        
+@app.route('/favorite/hourly/', methods=['GET'])
+def get_hourly_forecast() -> Response:
+        """
+        Route to retrieve the weather at a specific location by its name.
+
+        Path Parameter:
+            - location_name (str): The name of the desired location
+
+        Returns:
+            JSON response with the song details or error message.
+        """
+        location_name = request.args.get("location_name")
+        user_id =  request.args.get("user_id")
+        try:
+            if location_name not in favorite_locations_model.FavoriteLocations.get_favorites(user_id):
+                 return make_response(jsonify({'status':'error','error':"Location not one of your favorites"}))
+            logger.info(f"Retrieving hourly forecast by location name: {location_name}")
+            weather = favorite_locations_model.FavoriteLocations.get_hourly_forecast(location_name)
+            return make_response(jsonify({'status': 'success', 'hourly_forecast': weather}), 200)
+        except Exception as e:
+            logger.error(f"Error retrieving weather at location by name: {e}")
+            return make_response(jsonify({'error': str(e)}), 500)
 
         
 

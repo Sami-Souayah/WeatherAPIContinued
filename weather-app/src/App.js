@@ -39,7 +39,7 @@ function App() {
 
   const fetchHourlyForecast = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/forecast/hourly/${locationName}`);
+      const response = await axios.get(`${API_BASE_URL}/favorite/hourly/`,{ params: {location_name : locationName, user_id: userId}});
       setForecastData(response.data.hourly_forecast);
       setError('');
     } catch (err) {
@@ -50,7 +50,7 @@ function App() {
   // Fetch daily forecast
   const fetchDailyForecast = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/forecast/daily/${locationName}`);
+      const response = await axios.get(`${API_BASE_URL}/favorite/daily/`, { params: {location_name : locationName, user_id: userId}});
       setForecastData(response.data.daily_forecast);
       setError('');
     } catch (err) {
@@ -200,8 +200,8 @@ function App() {
             onChange={(e) => setLocationName(e.target.value)}
           />
           <br />
-          <button onClick={() => alert('Fetching hourly forecast...')}>Get Hourly Forecast</button>
-          <button onClick={() => alert('Fetching daily forecast...')}>Get Daily Forecast</button>
+          <button onClick={() => {alert('Fetching hourly forecast...');fetchHourlyForecast()}}>Get Hourly Forecast</button>
+          <button onClick={() => {alert('Fetching daily forecast...');fetchDailyForecast()}}>Get Daily Forecast</button>
           <button onClick={addFavorite}>Add to Favorites</button>
           <button onClick={deleteFavorite}>Delete from Favorites</button>
           <button onClick={() => {alert("Fetching weather for all favorites...");fetchFavoritesWeather();toggleFavorites()}}>Get Favorites Weather</button>
