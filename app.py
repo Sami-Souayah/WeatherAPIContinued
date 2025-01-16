@@ -121,7 +121,11 @@ def get_all_favs():
      try:
           logger.info(f"Fetching all favorites for user_id: {str(user_id)}")
           favlocs = favorite_locations_model.FavoriteLocations.get_favorites(user_id)
-          return make_response(jsonify({"status":"success", "favorite_locations":favlocs}),200)
+          logger.info(f"Favorite locs: {favlocs}")
+          if favlocs==[]:
+                return make_response(jsonify({"error":"No favorite locations for user exist"}),404)
+          else:
+            return make_response(jsonify({"status":"success", "favorite_locations":favlocs}),200)
      except Exception as e:
           logger.error(f"Error fetching all favorites: {e}")
           return make_response(jsonify({'error': str(e)}), 500)
@@ -283,11 +287,11 @@ def create_user():
             try:
                 User.create_user(username, password)
             except ValueError as ve:
+                 logger.error(f"ValueError caught: {ve}")
                  return make_response(jsonify({'status': 'error','error': str(ve)}), 404)
 
             logger.info(f"User created successfully: {username}")
             return make_response(jsonify({'status': 'user added', 'username': username}), 201)
-        
         except Exception as e:
             logger.error(f"Error creating user: {e}")
             return make_response(jsonify({'error': str(e)}), 500)

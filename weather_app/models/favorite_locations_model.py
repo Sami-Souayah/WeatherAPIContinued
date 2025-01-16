@@ -75,11 +75,15 @@ class FavoriteLocations():
         """
         logger.info("Fetching favorite locations for user_id %s", user_id)
         favorites = dbname.find_one({"UserID":user_id})
+        if not favorites:
+            logger.info("No favorite locations found for user_id %s", user_id)
+            return []
         if not favorites["Location names"]:
             logger.info("No favorite locations found for user_id %s", user_id)
             return []
         logger.info("Fetched favorite locations for user")
-        return favorites["Location names"]
+        result_string = ", ".join(favorites["Location names"])
+        return result_string
     
     @classmethod
     def delete_favorite(cls, user_id: int, location_name: str):

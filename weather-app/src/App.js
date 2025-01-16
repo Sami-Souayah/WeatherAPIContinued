@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
-import Register from './Register'; // Import your Register component
+import Register from './Register'; 
 import axios from 'axios';
 import UpdatePass from './UpdatePass'
 
@@ -199,11 +199,11 @@ function App() {
             value={locationName}
             onChange={(e) => setLocationName(e.target.value)}
           />
+            <button onClick={addFavorite}>Add to Favorites</button>
+            <button onClick={deleteFavorite}>Delete from Favorites</button>
           <br />
           <button onClick={() => {alert('Fetching hourly forecast...');fetchHourlyForecast()}}>Get Hourly Forecast</button>
           <button onClick={() => {alert('Fetching daily forecast...');fetchDailyForecast()}}>Get Daily Forecast</button>
-          <button onClick={addFavorite}>Add to Favorites</button>
-          <button onClick={deleteFavorite}>Delete from Favorites</button>
           <button onClick={() => {alert("Fetching weather for all favorites...");fetchFavoritesWeather();toggleFavorites()}}>Get Favorites Weather</button>
           <button onClick={() => {alert("Fetching all favorites...");fetchAllFavorites();toggleForecast()}}>Get All Favorites</button>
           <button onClick={() => {alert("Fetching the weather for location...");fetchOneFavWeather();toggleForecast()}}>Weather At Favorite</button>

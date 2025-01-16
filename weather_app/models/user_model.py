@@ -55,8 +55,11 @@ class User():
 
             dbname.insert_one({"Username":username, "Salt":salt,"Hashed password":hashed_password})
             logger.info("User successfully added to the database: %s", username)
-        except:
-                logger.error("Database error")
+        except ValueError:
+             raise
+        except Exception as e:
+                logger.error(f"Database error: {e}")
+                raise
 
     @classmethod
     def check_password(cls, username: str, password: str) -> bool:
@@ -139,6 +142,3 @@ class User():
         except:
             logger.error("Error replacing password")
 
-        
-
-       
