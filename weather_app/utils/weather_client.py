@@ -64,9 +64,7 @@ class WeatherClient:
                 "units": "imperial",  # Use "imperial" for Fahrenheit
             }
             response = requests.get(url, params=params)
-            response.raise_for_status()  # Raise an HTTPError for bad responses
-
-            # Parse and return the weather data
+            response.raise_for_status() 
             
             weather_data = response.json()
             self.logger.info("Weather data for %s fetched", location_name)

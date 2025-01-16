@@ -178,6 +178,7 @@ class FavoriteLocations():
             return ValueError(f"No favorite locations for userID {str(user_id)}")
         for fav in favorites["Location names"]:
             result+=[FavoriteLocations.get_weather_for_favorite(fav)]
+        result = '\n'.join(result)
         return result
     
     @classmethod

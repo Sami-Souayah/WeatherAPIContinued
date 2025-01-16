@@ -179,7 +179,7 @@ def get_weather_for_favorites() -> Response:
             weather_client = WeatherClient()
 
             locations_with_weather = favorite_locations_model.FavoriteLocations.get_all_favorites_with_weather(user_id)
-            return make_response(jsonify({'status': 'success', 'locations': locations_with_weather}), 200)
+            return make_response(Response(locations_with_weather, content_type='text/html'), 200)
 
         except Exception as e:
             logger.error(f"Error retrieving weather data for favorites: {e}")
