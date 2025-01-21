@@ -135,7 +135,7 @@ class FavoriteLocations():
     ##################################################
 
     @classmethod
-    def get_weather_for_favorite(cls, location_name, user_id) -> dict[str, Any]:
+    def get_weather_for_favorite(cls, location_name) -> dict[str, Any]:
         """
         Retrieves the weather data for a favorite location.
 
@@ -150,11 +150,7 @@ class FavoriteLocations():
             ValueError: If fetching weather data fails.
         """
         logger.info("Fetching weather for location '%s'", location_name)
-        favorite = dbname.find_one({"UserID":user_id})
-        favorites = favorite["Location names"]
         try: 
-            if location_name not in favorites:
-                return None
             weathercl = WeatherClient()
             weather_data = weathercl.get_weather(location_name)
             logger.info("Weather data for '%s': %s", location_name, weather_data)
