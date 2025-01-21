@@ -149,8 +149,12 @@ def get_weather_for_favorite() -> Response:
             if location_name not in favorite_locations_model.FavoriteLocations.get_favorites(user_id):
                  return make_response(jsonify({'status':'error','error':"Location not one of your favorites"}))
             logger.info(f"Retrieving weather by location name: {location_name}")
-            weather = favorite_locations_model.FavoriteLocations.get_weather_for_favorite(location_name)
-            return make_response(jsonify({'status': 'success', 'weather_loc': weather}), 200)
+            weather = favorite_locations_model.FavoriteLocations.get_weather_for_favorite(location_name, user_id)
+            logger.info(f"Weather is {weather}")
+            if weather == None:
+                 return make_response(jsonify({'status':'error','error':'This location is not one of your favorites'}))
+            else: 
+                return make_response(jsonify({'status': 'success', 'weather_loc': weather}), 200)
         except Exception as e:
             logger.error(f"Error retrieving weather at location by name: {e}")
             return make_response(jsonify({'error': str(e)}), 500)
