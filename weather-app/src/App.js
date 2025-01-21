@@ -62,9 +62,10 @@ function App() {
   const fetchFavoritesWeather = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/weather/favorites`, {
-        params: { user_id: userId },
+        params: { user_id: userId }, responseType: 'text',
       });
-      setForecastData(response.data.locations);
+      const locations = response.data.split('\n');
+      setForecastData(locations);
       setError('');
       alert("Fetched weather for all favorite locations!")
     } catch (err) {
