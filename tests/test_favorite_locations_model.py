@@ -71,4 +71,4 @@ def test_get_daily_forecast():
     FavoriteLocations.add_favorite(userID, "Chicago")
     FavoriteLocations.get_daily_forecast("Chicago")
 
-print(test_get_daily_forecast())
+print(test_get_weather_for_favorite("Boston"))
