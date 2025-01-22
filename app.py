@@ -146,6 +146,8 @@ def get_weather_for_favorite() -> Response:
         location_name = request.args.get("location_name")
         user_id =  request.args.get("user_id")
         try:
+            if location_name == "":
+                 return make_response(jsonify({'error':'No input'}), 404)
             if location_name not in favorite_locations_model.FavoriteLocations.get_favorites(user_id):
                  return make_response(jsonify({'error':"Location not one of your favorites"}), 404)
             logger.info(f"Retrieving weather by location name: {location_name}")
