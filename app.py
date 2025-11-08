@@ -10,7 +10,6 @@ from weather_app.utils.weather_client import WeatherClient
 from db.db_connection import get_database
 import re
 
-from config import ProductionConfig
 # Load environment variables from .env file
 load_dotenv()
 
@@ -83,7 +82,6 @@ def add_location() -> Response:
                 logger.error('Invalid input: user_id and location_name are required')
                 return make_response(jsonify({'error': 'Invalid input, all fields are required with valid values'}), 400)
 
-            # Add the song to the playlist
             logger.info('Adding location:', location_name)
             favorite_locations_model.FavoriteLocations.add_favorite(user_id=user_id,location_name=location_name)
             logger.info("Location added to favorites: ", location_name)
