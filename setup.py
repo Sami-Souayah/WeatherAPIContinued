@@ -1,0 +1,18 @@
+from setuptools import setup, find_packages
+
+setup(
+    name="WeatherAPIContinued",
+    version="0.1",
+    packages=find_packages(),
+    install_requires=[
+        "Flask==3.0.3",
+        "Flask-Cors==4.0.1",
+        "python-dotenv==1.0.1",
+        "requests==2.32.3",
+        "SQLAlchemy==2.0.36",
+        "flask_sqlalchemy==3.1.1",
+        "geopy==2.4.1",
+        "pymongo==4.10.1",
+        "pytest==8.3.4",
+    ],
+)

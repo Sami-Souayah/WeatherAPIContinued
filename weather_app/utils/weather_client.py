@@ -54,7 +54,7 @@ class WeatherClient:
         self.logger.info("Fetching weather data for location: %s", location_name)
 
         try:
-            url  = "https://api.openweathermap.org/data/3.0/onecall/overview?"
+            url  = "https://api.openweathermap.org/data/3.0/onecall?"
             # Construct the API request URL
             latlong = get_lat_long(location_name)
             params = {

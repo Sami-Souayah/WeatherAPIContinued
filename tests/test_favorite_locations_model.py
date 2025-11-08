@@ -1,7 +1,6 @@
 import pytest
 
-from weather_app.models.favorite_locations_model import FavoriteLocations
-from weather_app.models.user_model import User
+from weather_app import app
 
 
 @pytest.fixture()
