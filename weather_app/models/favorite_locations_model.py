@@ -18,13 +18,7 @@ dbname = dbname["Favorite Locations"]
 class FavoriteLocations():
     """
     This class represents a user's favorite locations
-    """
-
-    Locid: str
-    user_id: str
-    location_name: str
-
-    """
+   
     A class to manage a list of favorite locations.
 
     Attributes:

@@ -1,6 +1,9 @@
 import pytest
 from weather_app.models.favorite_locations_model import FavoriteLocations
 from weather_app.models.user_model import User
+import logging
+
+logger = logging.getLogger(__name__)
 
 @pytest.fixture()
 def Favorite_Locations():
@@ -11,66 +14,87 @@ def Favorite_Locations():
 def user():
     return User()
 
-@pytest.fixture
-def mock_update_play_count(mocker):
-    """Mock the update_play_count function for testing purposes."""
-    return mocker.patch("music_collection.models.playlist_model.update_play_count")
-
 
 ##################################################
 # Add Song Management Test Cases
 ##################################################
 
 
-def test_add_favorite_new(user, favorite_locations):
+def test_add_favorite_new(user, Favorite_Locations):
     user_id = user.get_id_by_username("Hello")
-    favorite_locations.add_favorite(user_id, "New York")
+    Favorite_Locations.add_favorite(user_id, "New York")
 
-    favorites = favorite_locations.get_favorites(user_id)
+    favorites = Favorite_Locations.get_favorites(user_id)
     assert "New York" in favorites
+    Favorite_Locations.delete_favorite(user_id, "New York")
 
-def test_add_favorite_two():
-    try:
+def test_add_favorite_two(user, Favorite_Locations):
         userID = user.get_id_by_username("Hello")
         Favorite_Locations.add_favorite(userID, "Philly")
         Favorite_Locations.add_favorite(userID, "London")
-    except Exception as e:
-        print("Failed because of:",e)
+        favorites = Favorite_Locations.get_favorites(userID)
+        try:
+            assert "Philly" in favorites and "London" in favorites
+        finally:
+            Favorite_Locations.delete_favorite(userID, "Philly")
+            Favorite_Locations.delete_favorite(userID, "London")
 
-def test_get_favorites():
+def test_get_favorites(user, Favorite_Locations):
     userID = user.get_id_by_username("Hello")
     Favorite_Locations.add_favorite(userID, "Philly")
     Favorite_Locations.add_favorite(userID, "London")
     favorites = Favorite_Locations.get_favorites(userID)
-    assert {"Philly", "London"} <= set(favorites)
+    try:
+        assert "Philly", "London" == favorites
+    finally:
+        Favorite_Locations.delete_favorite(userID, "Philly")
+        Favorite_Locations.delete_favorite(userID, "London")
 
-def test_delete_favorite():
+def test_delete_favorite(user, Favorite_Locations):
     userID = user.get_id_by_username("Hello")
     Favorite_Locations.add_favorite(userID, "New York City")
     Favorite_Locations.add_favorite(userID, "Philly")
     Favorite_Locations.delete_favorite(userID, "Philly")
     favorites = Favorite_Locations.get_favorites(userID)
-    assert "Philly" not in favorites
+    try:
+        assert "Philly" not in favorites
+    finally:
+        Favorite_Locations.delete_favorite(userID, "New York")
 
-def test_get_weather_for_favorite():
+def test_get_weather_for_favorite(user, Favorite_Locations):
     userID = user.get_id_by_username("Hello")
     Favorite_Locations.add_favorite(userID, "Boston")
     result = Favorite_Locations.get_weather_for_favorite("Boston")
-    assert result is not None
+    try:
+        assert result is not None
+    finally:
+        Favorite_Locations.delete_favorite(userID, "Boston")
 
-def test_get_weather_for_all_favorites():
+def test_get_weather_for_all_favorites(user, Favorite_Locations):
     userID = user.get_id_by_username("Hello")
     Favorite_Locations.add_favorite(userID, "New York")
     Favorite_Locations.add_favorite(userID, "Boston")
     Favorite_Locations.add_favorite(userID, "Chicago")
     all_weather = Favorite_Locations.get_all_favorites_with_weather(userID)
-    assert len(all_weather) == 3
+    try:
+        assert len(all_weather) == 3
+    finally:
+        Favorite_Locations.delete_favorite(userID, "New York")
+        Favorite_Locations.delete_favorite(userID, "Boston")
+        Favorite_Locations.delete_favorite(userID, "Chicago")
 
-def test_get_daily_forecast():
+
+
+def test_get_daily_forecast(user, Favorite_Locations):
     userID = user.get_id_by_username("Hello")
     Favorite_Locations.add_favorite(userID, "New York")
     Favorite_Locations.add_favorite(userID, "Boston")
     Favorite_Locations.add_favorite(userID, "Chicago")
     forecast = Favorite_Locations.get_daily_forecast("Chicago")
-    assert forecast is not None
+    try:
+        assert forecast is not None
+    finally:
+        Favorite_Locations.delete_favorite(userID, "New York")
+        Favorite_Locations.delete_favorite(userID, "Boston")
+        Favorite_Locations.delete_favorite(userID, "Chicago")
 
