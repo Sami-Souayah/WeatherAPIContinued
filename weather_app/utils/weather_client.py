@@ -24,7 +24,7 @@ class WeatherClient:
     """
     A client for fetching weather data from an external API.
     """
-    def __init__(self, base_url: str = "https://api.openweathermap.org/data/2.5/weather"):
+    def __init__(self, base_url: str = "https://api.openweathermap.org/data/3.0/onecall?"):
         """
         Initializes the WeatherClient.
 
@@ -155,7 +155,7 @@ class WeatherClient:
             
             weather_data = response.json()
             self.logger.info("Weather data for %s fetched", location_name)
-            return f"Location: {location_name} \n High: {weather_data['hourly'][0]['temp']['max']}F \n Low: {weather_data['hourly'][0]['temp']['min']}F \n Humidity: {weather_data['hourly'][0]['humidity']}% \n Weather: {weather_data['hourly'][0]['weather'][0]['description']}"
+            return f"Location: {location_name} \n Temperature: {weather_data['hourly'][0]['temp']}F \n Humidity: {weather_data['hourly'][0]['humidity']}% \n Description: {weather_data['hourly'][0]['weather'][0]['description']}"
 
         except requests.exceptions.RequestException as e:
             self.logger.error("Failed to fetch weather data for %s: %s", location_name, str(e))

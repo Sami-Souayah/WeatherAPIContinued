@@ -105,15 +105,15 @@ def test_hourly_forecast(user, Favorite_Locations):
     try:
         assert forecast is not None
     finally:
-        Favorite_Locations.delete_favorite("New York")
+        Favorite_Locations.delete_favorite(userID, "New York")
 
-def get_dated_forecast(user, Favorite_Locations):
+def test_get_dated_forecast(user, Favorite_Locations):
     userID = user.get_id_by_username("Hello")
-    Favorite_Locations.add_favorite(userID, "New York")
-    forecast = Favorite_Locations.get_dated_forecast("New York", "2025-11-04")
+    Favorite_Locations.add_favorite(userID, "Augusta")
+    forecast = Favorite_Locations.get_dated_forecast("Augusta", "2025-07-24")
     try:
         assert forecast is not None
     finally:
-        Favorite_Locations.delete_favorite("New York")
+        Favorite_Locations.delete_favorite(userID, "Augusta")
 
 
