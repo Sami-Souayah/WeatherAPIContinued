@@ -68,7 +68,7 @@ class WeatherClient:
             
             weather_data = response.json()
             self.logger.info("Weather data for %s fetched", location_name)
-            return f"Location: {location_name} \n Date: {weather_data['date']} \n Overview: {weather_data['weather_overview']}"
+            return f"Location: {location_name} \n Temperature: {weather_data['current']['temp']} \n Feels like: {weather_data['current']['feels_like']} \n Description {weather_data['current']['weather'][0]['description']}"
 
         except requests.exceptions.RequestException as e:
             self.logger.error("Failed to fetch weather data for %s: %s", location_name, str(e))
@@ -111,7 +111,7 @@ class WeatherClient:
             
             weather_data = response.json()
             self.logger.info("Weather data for %s fetched", location_name)
-            return f"Location: {location_name} \n High: {weather_data['daily'][0]['temp']['max']}F \n Low: {weather_data['daily'][0]['temp']['min']}F \n Humidity: {weather_data['daily'][0]['humidity']}% \n Weather: {weather_data['daily'][0]['weather'][0]['description']} \n Alerts: {weather_data['alerts'][0]['description']}"
+            return f"Location: {location_name} \n High: {weather_data['daily'][0]['temp']['max']}F \n Low: {weather_data['daily'][0]['temp']['min']}F \n Feels like {weather_data['daily'][0]['feels_like']['day']} \n Humidity: {weather_data['daily'][0]['humidity']}% \n Summary: {weather_data['daily'][1]['summary']}"
 
         except requests.exceptions.RequestException as e:
             self.logger.error("Failed to fetch weather data for %s: %s", location_name, str(e))
@@ -155,7 +155,7 @@ class WeatherClient:
             
             weather_data = response.json()
             self.logger.info("Weather data for %s fetched", location_name)
-            return f"Location: {location_name} \n High: {weather_data['hourly'][0]['temp']['max']}F \n Low: {weather_data['hourly'][0]['temp']['min']}F \n Humidity: {weather_data['hourly'][0]['humidity']}% \n Weather: {weather_data['hourly'][0]['weather'][0]['description']} \n Alerts: {weather_data['alerts'][0]['description']}"
+            return f"Location: {location_name} \n High: {weather_data['hourly'][0]['temp']['max']}F \n Low: {weather_data['hourly'][0]['temp']['min']}F \n Humidity: {weather_data['hourly'][0]['humidity']}% \n Weather: {weather_data['hourly'][0]['weather'][0]['description']}"
 
         except requests.exceptions.RequestException as e:
             self.logger.error("Failed to fetch weather data for %s: %s", location_name, str(e))

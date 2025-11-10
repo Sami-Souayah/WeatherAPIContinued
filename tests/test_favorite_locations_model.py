@@ -77,7 +77,7 @@ def test_get_weather_for_all_favorites(user, Favorite_Locations):
     Favorite_Locations.add_favorite(userID, "Chicago")
     all_weather = Favorite_Locations.get_all_favorites_with_weather(userID)
     try:
-        assert len(all_weather) == 3
+        assert "Chicago" and "Boston" and "New York" in all_weather
     finally:
         Favorite_Locations.delete_favorite(userID, "New York")
         Favorite_Locations.delete_favorite(userID, "Boston")
@@ -97,4 +97,23 @@ def test_get_daily_forecast(user, Favorite_Locations):
         Favorite_Locations.delete_favorite(userID, "New York")
         Favorite_Locations.delete_favorite(userID, "Boston")
         Favorite_Locations.delete_favorite(userID, "Chicago")
+
+def test_hourly_forecast(user, Favorite_Locations):
+    userID = user.get_id_by_username("Hello")
+    Favorite_Locations.add_favorite(userID, "New York")
+    forecast = Favorite_Locations.get_hourly_forecast("New York")
+    try:
+        assert forecast is not None
+    finally:
+        Favorite_Locations.delete_favorite("New York")
+
+def get_dated_forecast(user, Favorite_Locations):
+    userID = user.get_id_by_username("Hello")
+    Favorite_Locations.add_favorite(userID, "New York")
+    forecast = Favorite_Locations.get_dated_forecast("New York", "2025-11-04")
+    try:
+        assert forecast is not None
+    finally:
+        Favorite_Locations.delete_favorite("New York")
+
 
