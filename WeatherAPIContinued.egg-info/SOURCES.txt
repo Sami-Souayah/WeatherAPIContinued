@@ -5,6 +5,7 @@ WeatherAPIContinued.egg-info/SOURCES.txt
 WeatherAPIContinued.egg-info/dependency_links.txt
 WeatherAPIContinued.egg-info/requires.txt
 WeatherAPIContinued.egg-info/top_level.txt
+tests/test_api.py
 tests/test_favorite_locations_model.py
 tests/test_random_utils.py
 tests/test_user_model.py
