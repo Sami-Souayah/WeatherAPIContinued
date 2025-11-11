@@ -139,6 +139,20 @@ class User():
                 {"Username": username}, 
                 {"$set": {"Salt": salt, "Hashed password": hashed_password}})
                 logger.info("Password updated")
-        except:
-            logger.error("Error replacing password")
+        except Exception as e:
+            logger.error("Error replacing password:", e)
+    
+    @classmethod
+    def delete_user(cls, username: str) -> None:
+        """Deletes user. For internal use only, not to be implemented on the front end side"""
+        user = dbname.find_one({"Username": username})
+        try:
+            if not user:
+                logger.error("User %s not found", username)
+                raise ValueError(f"User {username} not found")
+            else:
+                dbname.delete_one(user)
+                logger.info("User %s deleted", username)
+        except Exception as e:
+            logger.error("Error deleting user:", e)
 
