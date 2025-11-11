@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { apiRequest } from "../api/client";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card";
 
 export default function Login({ onLogin }) {
@@ -42,6 +43,7 @@ export default function Login({ onLogin }) {
             <Button type="submit" className="w-full bg-blue-500 hover:bg-blue-600">
               Login
             </Button>
+            <Button type="submit" className="w-full bg-blue-500 hover:bg-blue-600"> Create User </Button>
           </form>
         </CardContent>
       </Card>
