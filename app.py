@@ -261,7 +261,7 @@ def create_user():
             data = request.get_json()
             username = data.get('username')
             password = data.get('password')
-            confirmpas = data.get("confirmPass")
+            confirmpas = data.get("confirmPassword")
             
         
             if not username or not password:

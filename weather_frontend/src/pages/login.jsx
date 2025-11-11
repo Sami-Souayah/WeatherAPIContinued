@@ -28,8 +28,10 @@ export default function Login({ onLogin }) {
     navigation("/createuser");
   }
 
+
   return (
     <div className="flex h-screen items-center justify-center bg-gradient-to-br from-blue-100 to-blue-300">
+      
       <Card className="w-96 shadow-lg rounded-2xl">
         <CardContent className="p-6">
           <h2 className="text-2xl font-semibold text-center mb-4">Login</h2>
