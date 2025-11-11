@@ -3,11 +3,13 @@ import { apiRequest } from "../api/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 
 export default function Login({ onLogin }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigation = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -21,6 +23,10 @@ export default function Login({ onLogin }) {
       setError(err.message);
     }
   };
+
+  const handleCreateUser = () => {
+    navigation("/createuser");
+  }
 
   return (
     <div className="flex h-screen items-center justify-center bg-gradient-to-br from-blue-100 to-blue-300">
@@ -43,7 +49,7 @@ export default function Login({ onLogin }) {
             <Button type="submit" className="w-full bg-blue-500 hover:bg-blue-600">
               Login
             </Button>
-            <Button type="submit" className="w-full bg-blue-500 hover:bg-blue-600"> Create User </Button>
+            <Button type="button" onClick={handleCreateUser} className="w-full bg-blue-500 hover:bg-blue-600"> Create User </Button>
           </form>
         </CardContent>
       </Card>
