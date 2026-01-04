@@ -1,14 +1,13 @@
 from dotenv import load_dotenv
 from flask import Flask, jsonify, make_response, Response, request
 from flask_cors import CORS
-from werkzeug.exceptions import BadRequest, Unauthorized
 import logging
 from weather_app.models import favorite_locations_model
 from weather_app.utils.logger import configure_logger
 from weather_app.models.user_model import User
-from weather_app.utils.weather_client import WeatherClient
 from db.db_connection import get_database
 import re
+
 
 # Load environment variables from .env file
 load_dotenv()
@@ -46,6 +45,8 @@ def healthcheck() -> Response:
         except Exception as e:
              logger.error("Health check failed")
              return make_response(jsonify({"Health check failed:",str(e)}))
+        
+
 
 
 
